@@ -1,0 +1,165 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+  .tm{--g:#33C88A;--g2:#3BE29E;--gd:#1A8F61;--mint:#E2F5EF;--ink:#2A2A2A;--text:#333333;--muted:#6B6F76;--line:#2A2A2A1a;--card:#F2F4F5;--red:#E95B54;font:12px/1.4 Poppins,system-ui,sans-serif;color:var(--text);background:#fff;height:680px;display:flex;flex-direction:column;overflow:hidden;text-align:left;border-radius:10px;border:1px solid var(--line)}
+  .tm *{box-sizing:border-box}
+  .top{height:58px;flex:none;display:flex;align-items:center;gap:18px;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:300;color:var(--text);margin-right:8px}
+  .brand b{font-weight:700}
+  .brand small{font-size:10px;font-weight:600;color:var(--gd);margin-left:1px}
+  .tab{padding:6px 1px;color:var(--muted);font-weight:500;border-bottom:3px solid transparent}
+  .tab.on{color:var(--ink);font-weight:600;border-color:var(--g)}
+  .sp{flex:1}
+  .run{display:flex;align-items:center;gap:7px;background:var(--mint);border:1px solid var(--g);color:var(--gd);border-radius:99px;padding:5px 12px;font-weight:600;font-size:11px;white-space:nowrap}
+  .run i{width:7px;height:7px;border-radius:50%;background:var(--g)}
+  .who{display:flex;align-items:center;gap:6px;font-weight:500;white-space:nowrap}
+  .who i{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--g);color:#fff;font-style:normal;font-weight:600}
+  .add{background:var(--ink);color:#fff;padding:7px 15px;font-weight:600;white-space:nowrap;border-radius:9px}
+  .bar{flex:none;display:flex;align-items:center;gap:12px;padding:8px 18px;background:var(--mint);flex-wrap:wrap}
+  .lab{font-size:9.5px;font-weight:600;color:#444;letter-spacing:.16em;text-transform:uppercase}
+  .seg{display:inline-flex;background:#fff;border-radius:9px;padding:2px}
+  .seg button{border:0;background:transparent;color:var(--text);padding:4px 11px;font:500 11px Poppins,system-ui,sans-serif;cursor:pointer;border-radius:7px}
+  .tm[data-cal=off] [data-c=off],.tm[data-cal=week] [data-c=week],.tm[data-cal=month] [data-c=month],.tm[data-note=a] [data-s=a],.tm[data-note=b] [data-s=b]{background:var(--ink);color:#fff}
+  .stat{font-weight:600;font-size:11px;color:var(--text)}
+  .stat b{color:var(--red);font-weight:700}
+  .main{flex:1;display:flex;min-height:0}
+  .board{flex:1;position:relative;min-width:0;overflow:hidden;background:radial-gradient(#2a2a2a1c 1.1px,transparent 1.1px) 0 0/18px 18px,#fff}
+
+  /* note anatomy */
+  .n{position:absolute;width:214px;border-radius:12px;box-shadow:0 4px 14px #2a2a2a24;font-size:11.5px;color:var(--text);--sub:var(--muted);--box:#2a2a2a66;--track:#2a2a2a1c;--fill:var(--g);--eye:var(--muted)}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 12px 0}
+  .pri{font-weight:600;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--eye)}
+  .due{font-weight:600;font-size:10.5px;white-space:nowrap}
+  .due.late{color:#fff;background:var(--red);padding:1px 7px;border-radius:99px}
+  .due.today{color:#6b5300;background:#FFEFA8;padding:1px 7px;border-radius:99px}
+  .n h5{margin:0;padding:5px 12px 0;font:700 15px/1.22 Poppins,system-ui,sans-serif;color:inherit}
+  .tag{padding:1px 12px 5px;color:var(--sub);font-size:10.5px}
+  .subs{list-style:none;margin:0;padding:1px 12px 3px}
+  .subs li{display:flex;gap:6px;align-items:flex-start;padding:1.5px 0;line-height:1.25}
+  .subs li::before{content:"";flex:none;width:11px;height:11px;margin-top:1px;border:1.5px solid var(--box);border-radius:3px}
+  .subs li.d{color:var(--sub);text-decoration:line-through}
+  .subs li.d::before{background:var(--fill);border-color:var(--fill)}
+  .more{padding:0 12px 4px;color:var(--sub);font-size:10.5px;font-weight:500}
+  .prog{height:4px;margin:3px 12px 0;background:var(--track);border-radius:4px}
+  .prog i{display:block;height:100%;background:var(--fill);border-radius:4px}
+  .foot{display:flex;align-items:center;gap:8px;padding:8px 12px 10px;font-weight:700;font-size:13px}
+  .foot .cnt{margin-left:auto;font-weight:500;font-size:10.5px;color:var(--sub)}
+  .play{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--ink);color:#fff;font-size:9px}
+  .n.on .play{background:var(--g);color:#fff}
+
+  /* A: OMD colours, taken from the slide cards */
+  .tm[data-note=a] .n.high{background:var(--ink);color:#fff;--sub:#C4C7CC;--box:#ffffff80;--track:#ffffff2e;--fill:var(--g2);--eye:var(--g2)}
+  .tm[data-note=a] .n.high .play{background:#fff;color:var(--ink)}
+  .tm[data-note=a] .n.high.on .play{background:var(--g2);color:var(--ink)}
+  .tm[data-note=a] .n.med{background:var(--mint);--eye:var(--gd)}
+  .tm[data-note=a] .n.low{background:var(--card)}
+  .tm[data-note=a] .n.on{outline:3px solid var(--g2);outline-offset:2px}
+  /* B: traditional sticky colours */
+  .tm[data-note=b] .n{border-radius:2px 2px 16px 2px;--eye:var(--ink)}
+  .tm[data-note=b] .n.high{background:#FFD9D6}
+  .tm[data-note=b] .n.med{background:#FFF0A6}
+  .tm[data-note=b] .n.low{background:#DDEAF0}
+  .tm[data-note=b] .n.on{outline:3px solid var(--g);outline-offset:2px}
+
+  .toast{position:absolute;right:16px;bottom:14px;width:290px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--g);border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px #2a2a2a2e;font-size:11.5px}
+  .toast b{display:block;font-weight:600;margin-bottom:1px;color:var(--ink)}
+  .toast .acts{display:flex;gap:6px;margin-top:7px}
+  .toast button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 9px;font:500 11px Poppins,system-ui,sans-serif;cursor:pointer;color:var(--text)}
+  .toast button.pr{background:var(--g);border-color:var(--g);color:#fff;font-weight:600}
+
+  .wk{flex:none;display:none;grid-template-columns:repeat(7,1fr);background:#fff;border-top:1px solid var(--line);height:96px}
+  .tm[data-cal=week] .wk{display:grid}
+  .wk>div{border-left:1px solid var(--line);padding:6px 7px;overflow:hidden}
+  .wk>div:first-child{border-left:0}
+  .wk .d{font-weight:600;color:var(--muted);font-size:10px;margin-bottom:3px}
+  .wk .now{background:var(--mint)}.wk .now .d{color:var(--gd)}
+  .chip{display:block;padding:2px 6px;border-radius:5px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:500;background:var(--card)}
+  .chip.high{background:var(--ink);color:#fff}.chip.med{background:var(--mint)}
+  .tm[data-note=b] .chip.high{background:#FFD9D6;color:var(--text)}.tm[data-note=b] .chip.med{background:#FFF0A6}.tm[data-note=b] .chip{background:#DDEAF0}
+  .mo{display:none;width:50%;flex:none;background:#fff;border-left:1px solid var(--line);padding:10px 12px;flex-direction:column;box-shadow:-6px 0 16px #2a2a2a18}
+  .tm[data-cal=month] .mo{display:flex}
+  .mo h6{margin:0 0 6px;font:700 14px Poppins,system-ui,sans-serif;color:var(--ink)}
+  .mg{flex:1;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+  .mg>div{background:#fff;padding:2px 3px;font-size:10px;overflow:hidden;min-width:0}
+  .mg .h{font-weight:600;color:var(--muted);text-align:center}
+  .mg .o{color:#C4C7CC;background:#fafbfb}
+  .mg .t{background:var(--mint);font-weight:700}
+  .edge{flex:none;height:7px;background:linear-gradient(90deg,#3BE29E,#A6E9D6)}
+</style>
+
+<h2>Taskmaster 1.0: your colours, priority as a label</h2>
+<p class="subtitle">Each note keeps the colour you choose, and the example colours here stand for clinics. Click a colour dot to filter the board. <b>Off</b>, <b>Week</b> and <b>Month</b> still switch the calendar. The tasks and clinics are made-up examples.</p>
+
+<div class="tm" data-cal="off" data-note="b">
+  <div class="top">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 65 65" aria-hidden="true"><defs><linearGradient id="omds" gradientUnits="userSpaceOnUse" x1="23.28" y1="35.1" x2="64.98" y2="35.1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#00B570"/></linearGradient></defs><path fill="#3DD79D" d="M32.8,23.3h-9.5l0,30.9c0,6,4.8,10.8,10.8,10.8l10.7,0l0-29.8C44.8,28.6,39.4,23.3,32.8,23.3z"/><path fill="#3DD79D" d="M35.2,41.7l9.5,0l0-30.9C44.8,4.8,39.9,0,34,0L23.3,0v29.8C23.3,36.4,28.6,41.7,35.2,41.7z"/><path fill="#00B570" d="M44.8,29.8V12.2c0,0-2.7,8-9.5,8H10.8C4.8,20.2,0,25.1,0,31l0,10.7h33.2C39.8,41.7,44.8,36.4,44.8,29.8z"/><path fill="url(#omds)" d="M23.3,32.1V50c0,0,1.4-8.1,8.4-8.3h22.5c6,0,10.8-4.8,10.8-10.8V20.2l-29.8,0C28.6,20.2,23.3,25.6,23.3,32.1z"/></svg>
+      <span>Task<b>master</b></span><small>1.0</small>
+    </div>
+    <span class="tab on">Board</span><span class="tab">Notes</span><span class="tab">Time</span>
+    <span class="sp"></span>
+    <span class="run"><i></i>Landing page copy · 0:42:10 ⏸</span>
+    <span class="who"><i>P</i>Pavle ▾</span>
+    <span class="add">+ New task</span>
+  </div>
+  <div class="bar">
+    <span class="lab">Colour</span>
+    <span class="dots"><button style="background:#f6df86" onclick="tmF(this,'c-y')"></button><button style="background:#f2b5c5" onclick="tmF(this,'c-p')"></button><button style="background:#f5c49d" onclick="tmF(this,'c-o')"></button><button style="background:#c5dda0" onclick="tmF(this,'c-g')"></button><button style="background:#aed4ea" onclick="tmF(this,'c-b')"></button><button style="background:#d1c1ee" onclick="tmF(this,'c-l')"></button><button style="background:#fff" onclick="tmF(this,'c-w')"></button></span>
+    <span class="lab">Calendar</span>
+    <span class="seg"><button data-c="off" onclick="this.closest('.tm').dataset.cal='off'">Off</button><button data-c="week" onclick="this.closest('.tm').dataset.cal='week'">Week</button><button data-c="month" onclick="this.closest('.tm').dataset.cal='month'">Month</button></span>
+    <span class="sp"></span><span class="stat">3 due this week · <b>1 overdue</b></span>
+  </div>
+  <div class="main">
+    <div class="board">
+      <div class="n high on c-p" style="left:20px;top:18px"><div class="head"><span class="pri">High</span><span class="due today">Due today</span></div><h5>Landing page copy</h5><div class="tag">Clinic A · Website</div><ul class="subs"><li class="d">Collect doctor bio</li><li class="d">Write hero section</li><li>Write treatment pages</li></ul><div class="more">+2 more subtasks</div><div class="prog"><i style="width:40%"></i></div><div class="foot"><span class="play">❚❚</span>3h 20m<span class="cnt">2 of 5</span></div></div>
+
+      <div class="n med c-y" style="left:252px;top:42px"><div class="head"><span class="pri">Medium</span><span class="due">Fri 6 Nov</span></div><h5>Monthly report</h5><div class="tag">Clinic B · Meta Ads</div><ul class="subs"><li class="d">Pull campaign data</li><li>Write summary</li><li>Send to account manager</li></ul><div class="prog"><i style="width:33%"></i></div><div class="foot"><span class="play">▶</span>45m<span class="cnt">1 of 3</span></div></div>
+
+      <div class="n low c-b" style="left:484px;top:16px"><div class="head"><span class="pri">Low</span><span class="due">Mon 9 Nov</span></div><h5>Ad set review</h5><div class="tag">Clinic C · Google Ads</div><div class="foot"><span class="play">▶</span>1h 05m</div></div>
+
+      <div class="n high c-p" style="left:716px;top:30px"><div class="head"><span class="pri">High</span><span class="due late">1 day late</span></div><h5>Client call prep</h5><div class="tag">Clinic A</div><ul class="subs"><li class="d">Review last month</li><li class="d">List questions</li><li class="d">Prepare slides</li><li>Send agenda</li></ul><div class="prog"><i style="width:75%"></i></div><div class="foot"><span class="play">▶</span>55m<span class="cnt">3 of 4</span></div></div>
+
+      <div class="n med c-y" style="left:484px;top:186px"><div class="head"><span class="pri">Medium</span><span class="due">Wed 11 Nov</span></div><h5>Content calendar</h5><div class="tag">Clinic B · Organic</div><ul class="subs"><li>Plan 12 posts</li><li>Write captions</li></ul><div class="more">+4 more subtasks</div><div class="prog"><i style="width:0"></i></div><div class="foot"><span class="play">▶</span>0m<span class="cnt">0 of 6</span></div></div>
+
+      <div class="n low c-g" style="left:60px;top:322px"><div class="head"><span class="pri">Low</span><span class="due">No date</span></div><h5>Send invoice notes</h5><div class="tag">Waiting on reply</div><div class="foot"><span class="play">▶</span>10m</div></div>
+
+      <div class="toast"><b>Save "Monthly report" as a template?</b>Next time, it starts with these 3 subtasks ready.<div class="acts"><button class="pr" onclick="this.closest('.toast').remove()">Save template</button><button onclick="this.closest('.toast').remove()">Not now</button></div></div>
+    </div>
+    <div class="mo"><h6>November 2026</h6>
+      <div class="mg">
+        <div class="h">Mon</div><div class="h">Tue</div><div class="h">Wed</div><div class="h">Thu</div><div class="h">Fri</div><div class="h">Sat</div><div class="h">Sun</div>
+        <div class="o">26</div><div class="o">27</div><div class="o">28</div><div class="o">29</div><div class="o">30</div><div class="o">31</div><div>1</div>
+        <div>2</div><div>3</div><div>4<span class="chip high">Call prep</span></div><div class="t">5<span class="chip high">Landing page</span></div><div>6<span class="chip med">Report</span></div><div>7</div><div>8</div>
+        <div>9<span class="chip">Ad set review</span></div><div>10</div><div>11<span class="chip med">Content cal.</span></div><div>12</div><div>13</div><div>14</div><div>15</div>
+        <div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div>
+        <div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div><div>29</div>
+        <div>30</div><div class="o">1</div><div class="o">2</div><div class="o">3</div><div class="o">4</div><div class="o">5</div><div class="o">6</div>
+      </div>
+    </div>
+  </div>
+  <div class="wk">
+    <div><div class="d">Mon 2</div></div>
+    <div><div class="d">Tue 3</div></div>
+    <div><div class="d">Wed 4</div><span class="chip high">Client call prep</span></div>
+    <div class="now"><div class="d">Thu 5 · today</div><span class="chip high">Landing page copy</span></div>
+    <div><div class="d">Fri 6</div><span class="chip med">Monthly report</span></div>
+    <div><div class="d">Sat 7</div></div>
+    <div><div class="d">Sun 8</div></div>
+  </div>
+  <div class="edge"></div>
+</div>
+<style>
+  .tm[data-note=b] .n.c-y{background:#f6df86}.tm[data-note=b] .n.c-p{background:#f2b5c5}.tm[data-note=b] .n.c-b{background:#aed4ea}.tm[data-note=b] .n.c-g{background:#c5dda0}
+  .tm .n{--sub:#4b4f55;--box:#2a2a2a80;--track:#2a2a2a26;--fill:#2A2A2A}
+  .tm .pri{padding:2px 7px;border-radius:4px;font-weight:700;letter-spacing:.12em}
+  .tm .n.high .pri{background:#D93A33;color:#fff}
+  .tm .n.med .pri{border:1.5px solid #2A2A2A;color:#2A2A2A;padding:1px 6px}
+  .tm .n.low .pri{color:#4b4f55;padding-left:0}
+  .tm .chip.high{background:#f2b5c5!important}.tm .chip.med{background:#f6df86!important}.tm .chip{background:#aed4ea!important}
+  .tm .dots{display:inline-flex;gap:5px}
+  .tm .dots button{width:20px;height:20px;border-radius:50%;border:1.5px solid #2a2a2a44;padding:0;cursor:pointer}
+  .tm .dots button.on{outline:2px solid #2A2A2A;outline-offset:1px}
+  .tm .n.dim{opacity:.18}
+</style>
+<script>
+function tmF(b,c){var t=b.closest('.tm'),on=b.classList.contains('on');t.querySelectorAll('.dots button').forEach(function(x){x.classList.remove('on')});t.querySelectorAll('.n').forEach(function(n){n.classList.toggle('dim',!on&&!n.classList.contains(c))});if(!on)b.classList.add('on')}
+</script>
