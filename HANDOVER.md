@@ -56,5 +56,5 @@ Font: Poppins (included). Greens: `#33C88A`, `#3BE29E`, `#1A8F61`. Mint: `#E2F5E
 ## Also worth knowing
 
 - One imported task has a 198h 5m session, probably a forgotten timer. Its owner can fix it with the Edit button.
-- The video guide script is a Claude doc in the owner's account: https://claude.ai/artifact/CNMUKHwvXTAEANb9AmwRL3. Update it when features change.
+- The video guide script is a Claude doc in the owner's account: https://claude.ai/artifact/Hi4E3v6bpx6jRcBHfLAGTz (Taskmaster 1.0 Intro Script, 18 scenes covering every feature). Update it when features change. It replaces the earlier, shorter script at https://claude.ai/artifact/CNMUKHwvXTAEANb9AmwRL3.
 - Design documents are in `docs/`.
