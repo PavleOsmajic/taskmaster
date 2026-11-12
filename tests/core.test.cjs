@@ -21,7 +21,9 @@ test('due labels', () => {
   assert.deepEqual(C.dueLabel(task({ due: THU }), THU), { text: 'Due today', kind: 'today' });
   assert.deepEqual(C.dueLabel(task({ due: '2026-11-04' }), THU), { text: '1 day late', kind: 'late' });
   assert.deepEqual(C.dueLabel(task({ due: '2026-11-01' }), THU), { text: '4 days late', kind: 'late' });
-  assert.deepEqual(C.dueLabel(task({ due: '2026-11-06' }), THU), { text: 'Fri 6 Nov', kind: '' });
+  assert.deepEqual(C.dueLabel(task({ due: '2026-11-06' }), THU), { text: 'Due tomorrow', kind: 'soon' });
+  assert.deepEqual(C.dueLabel(task({ due: '2026-11-07' }), THU), { text: 'Due in 2 days', kind: 'soon' });
+  assert.deepEqual(C.dueLabel(task({ due: '2026-11-08' }), THU), { text: 'Sun 8 Nov', kind: '' });
   assert.deepEqual(C.dueLabel(task({}), THU), { text: 'No date', kind: 'none' });
   assert.equal(C.dueLabel(task({ due: '2026-11-04', status: 'done' }), THU).kind, '');
 });
@@ -707,11 +709,14 @@ test('theme preference is checked when loading', () => {
 test('due times show on the label, and count once they pass', () => {
   const at = (h, m = 0) => new Date(2026, 10, 5, h, m);
   const t = task({ due: THU, dueTime: '14:30' });
-  assert.deepEqual(C.dueLabel(t, THU, at(9)), { text: 'Due today, 14:30', kind: 'today' });
-  assert.deepEqual(C.dueLabel(t, THU, at(14, 30)), { text: 'Due today, 14:30', kind: 'today' });
+  assert.deepEqual(C.dueLabel(t, THU, at(9)), { text: 'Due in 5h 30m', kind: 'today' });
+  assert.deepEqual(C.dueLabel(t, THU, at(12, 30)), { text: 'Due in 2h', kind: 'today' });
+  assert.deepEqual(C.dueLabel(t, THU, at(14, 5)), { text: 'Due in 25m', kind: 'today' });
+  assert.deepEqual(C.dueLabel(t, THU, at(14, 30)), { text: 'Due in 1m', kind: 'today' });
   assert.deepEqual(C.dueLabel(t, THU, at(14, 31)), { text: 'Late, was due 14:30', kind: 'late' });
   assert.deepEqual(C.dueLabel(t, THU), { text: 'Due today, 14:30', kind: 'today' });
-  assert.deepEqual(C.dueLabel(task({ due: '2026-11-06', dueTime: '09:00' }), THU, at(12)), { text: 'Fri 6 Nov, 09:00', kind: '' });
+  assert.deepEqual(C.dueLabel(task({ due: '2026-11-06', dueTime: '09:00' }), THU, at(12)), { text: 'Due tomorrow, 09:00', kind: 'soon' });
+  assert.deepEqual(C.dueLabel(task({ due: '2026-11-09', dueTime: '09:00' }), THU, at(12)), { text: 'Mon 9 Nov, 09:00', kind: '' });
   assert.deepEqual(C.dueLabel(task({ due: '2026-11-04', dueTime: '09:00' }), THU, at(12)), { text: '1 day late', kind: 'late' });
   assert.deepEqual(C.dueLabel(task({ due: THU }), THU, at(23)), { text: 'Due today', kind: 'today' });
   assert.deepEqual(C.dueLabel(task({ due: THU, dueTime: '09:00', status: 'done' }), THU, at(12)), { text: 'Thu 5 Nov, 09:00', kind: '' });

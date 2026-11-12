@@ -69,11 +69,23 @@
     const at = t.dueTime ? `, ${t.dueTime}` : '';
     if (t.status === 'done') return { text: fmtDay(t.due) + at, kind: '' };
     if (pastDueTime(t, today, now)) return { text: `Late, was due ${t.dueTime}`, kind: 'late' };
-    if (t.due === today) return { text: `Due today${at}`, kind: 'today' };
+    if (t.due === today) {
+      // With a time and a clock, count down the hours and minutes left.
+      if (now && t.dueTime) {
+        const [h, m] = t.dueTime.split(':').map(Number);
+        const left = Math.max(1, h * 60 + m - (now.getHours() * 60 + now.getMinutes()));
+        return { text: `Due in ${left >= 60 ? `${Math.floor(left / 60)}h${left % 60 ? ` ${left % 60}m` : ''}` : `${left}m`}`, kind: 'today' };
+      }
+      return { text: `Due today${at}`, kind: 'today' };
+    }
     if (t.due < today) {
       const n = daysBetween(t.due, today);
       return { text: `${n} day${n === 1 ? '' : 's'} late`, kind: 'late' };
     }
+    // The last two days before the due date count down, as a gentle reminder.
+    const until = daysBetween(today, t.due);
+    if (until === 1) return { text: `Due tomorrow${at}`, kind: 'soon' };
+    if (until === 2) return { text: `Due in 2 days${at}`, kind: 'soon' };
     return { text: fmtDay(t.due) + at, kind: '' };
   }
 

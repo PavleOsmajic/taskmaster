@@ -65,6 +65,8 @@ A client you type on a task or note is saved, so next time you can pick it from 
 
 Add a time beside the due date in the New task box or a task's details, or type one into the name. It shows on the note, sorts tasks within a day, and appears on the calendar. Once it passes, the task shows as late. Taskmaster doesn't send alerts.
 
+For the last two days before a due date, a small bell counts down: **Due in 2 days**, then **Due tomorrow**. On the day itself, a task with a due time shows the hours and minutes left, such as **Due in 2h 15m**, and updates every minute.
+
 ## Decimal hours for Basecamp
 
 Tracked time also shows in decimal hours, so 1h 30m reads 1.5 h. In the Time tab and a task's details, click the green hours button to copy just the number, ready to paste into Basecamp. **Copy as** sets whether the Copy buttons use 1.33 or 1h 20m.
