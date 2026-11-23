@@ -562,8 +562,9 @@ test('tidying sorts inside each area and keeps areas where they are', () => {
   assert.equal(r.areas[0].x, 100);
   assert.equal(r.areas[0].y, 50);
   assert.deepEqual(r.positions.h, { x: 120, y: 96 }, 'high priority first, under the area heading');
-  assert.equal(r.positions.n.y, 96 + 200 + 24, 'next priority on its own row');
-  assert.ok(r.areas[0].h >= r.positions.n.y + 200 - 50, 'area grew to hold its notes');
+  assert.deepEqual(r.positions.n, { x: 120 + 280 + 24, y: 96 }, 'inside an area, notes fill the row instead of starting one per priority');
+  assert.equal(r.areas[0].w, 624, 'area hugs its two notes');
+  assert.ok(r.areas[0].h >= 96 + 200 - 50, 'area holds its notes');
   assert.ok(r.positions.loose.y >= r.areas[0].y + r.areas[0].h, 'loose notes go below the areas');
 });
 
@@ -617,9 +618,9 @@ test('new client areas are sized to their notes and flow into rows', () => {
     task({ id: 'b1', clientTag: 'B' }), task({ id: 'b2', clientTag: 'B' }), task({ id: 'b3', clientTag: 'B' }), task({ id: 'b4', clientTag: 'B' }),
     task({ id: 'c1', clientTag: 'C' }),
   ];
-  const made = C.clientAreas(list, [], { x: 0, y: 0, w: 2000, ownerId: 'me' });
+  const made = C.clientAreas(list, [], { x: 0, y: 0, w: 1300, ownerId: 'me' });
   const by = n => made.areas.find(a => a.name === n);
-  assert.equal(by('A').w, 624, 'room for two notes');
+  assert.equal(by('A').w, 320, 'one note, so room for one');
   assert.equal(by('B').w, 928, 'room for three notes, no more');
   assert.equal(by('B').y, by('A').y, 'same row while they fit');
   assert.equal(by('C').x, 0, 'next row when they do not');
@@ -627,6 +628,28 @@ test('new client areas are sized to their notes and flow into rows', () => {
   const fin = n => placed.areas.find(a => a.name === n);
   assert.ok(fin('C').y >= fin('A').y + fin('A').h, 'an area that grows pushes down the one under it');
   assert.equal(fin('A').y, fin('B').y);
+});
+
+test('areas hug their notes: they grow and shrink, and empty ones keep their size', () => {
+  const a = C.newArea({ id: 'a', x: 0, y: 0, w: 928, h: 600 });
+  const empty = C.newArea({ id: 'e', x: 1000, y: 0, w: 500, h: 400 });
+  const rects = [{ x: 20, y: 46, w: 280, h: 200 }];
+  assert.deepEqual(C.fitAreasToNotes([a, empty], rects), [{ id: 'a', w: 320, h: 266 }]);
+  const two = [...rects, { x: 324, y: 46, w: 280, h: 300 }];
+  assert.deepEqual(C.fitAreasToNotes([a, empty], two), [{ id: 'a', w: 624, h: 366 }]);
+  assert.deepEqual(C.fitAreasToNotes([{ ...a, w: 624, h: 366 }], two), [], 'nothing to change once it fits');
+  assert.deepEqual(C.fitAreasToNotes([a], [{ x: 20, y: 46, w: 100, h: 50 }]), [{ id: 'a', w: C.AREA_MIN_W, h: C.AREA_MIN_H }], 'never smaller than the minimum');
+});
+
+test('tidying sizes an area to its notes, up to three across, without growing into the area beside it', () => {
+  const a = C.newArea({ id: 'a', x: 0, y: 0, w: 1400, h: 900 });
+  const one = C.tidyBoard([task({ id: 'x' })], [a], sizes.h, sizes.w, { x: 0, y: 0, w: 2000 }, { x: 'a' });
+  assert.equal(one.areas[0].w, 320, 'shrinks to one note');
+  assert.ok(one.areas[0].h < 900, 'and gets shorter');
+  const five = ['1', '2', '3', '4', '5'].map(id => task({ id }));
+  const r = C.tidyBoard(five, [{ ...a, w: 320 }], sizes.h, sizes.w, { x: 0, y: 0, w: 2000 }, Object.fromEntries(five.map(t => [t.id, 'a'])));
+  assert.equal(r.areas[0].w, 928, 'grows to three across, no more');
+  assert.equal(C.areaWidthFor([]), null);
 });
 
 test('an area grows to hold a note dropped at its edge', () => {

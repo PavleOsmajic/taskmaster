@@ -45,11 +45,11 @@ Shift-click or Ctrl-click tasks in any view to select them, press `Ctrl + A` to 
 
 Areas are labelled parts of the sticky board, such as one for each client.
 
-- **+ Area** adds an empty one. Name it, drag its heading to move it with its notes, and drag its corner to resize it.
+- **+ Area** adds an empty one. Name it, drag its heading to move it with its notes, and drag its corner to resize it while it's empty.
 - **Client areas** makes one area for each client on the board and moves their notes in. You can undo it.
-- A note belongs to the area its centre sits in, and an area grows to fit a note dropped at its edge.
+- A note belongs to the area its centre sits in. An area with notes fits itself to them, growing and shrinking as notes are added, moved, finished or resized. It never grows sideways into an area beside it.
 - A new task with a client (`#clinic`) lands in the area with that name.
-- **Tidy up** sorts inside each area and puts other notes underneath. Areas stay where they are, unless one grows into the one below it.
+- **Tidy up** sorts inside each area, up to three notes across, and puts other notes underneath. Areas stay where they are, unless one grows into the one below it.
 - Deleting an area keeps its notes on the board.
 
 ## Clients

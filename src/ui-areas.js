@@ -84,6 +84,23 @@
     const el = areaEl(a.id);
     if (el) { el.style.width = a.w + 'px'; el.style.height = a.h + 'px'; }
   }
+  /* Areas hug the notes inside them, growing and shrinking as notes come and go.
+     Only empty areas keep a size you set, so only they show the resize grip. */
+  app.fitAreas = function () {
+    if (!areas().length) return;
+    const rects = app.noteRects();
+    const full = new Set(rects.map(r => C.areaAt(areas(), r.x + r.w / 2, r.y + r.h / 2)).filter(Boolean).map(a => a.id));
+    for (const a of areas()) { const el = areaEl(a.id); if (el) el.classList.toggle('fitted', full.has(a.id)); }
+    const changes = C.fitAreasToNotes(areas(), rects);
+    for (const c of changes) {
+      const a = area(c.id);
+      a.w = c.w;
+      a.h = c.h;
+      const el = areaEl(a.id);
+      if (el) { el.style.width = a.w + 'px'; el.style.height = a.h + 'px'; }
+    }
+    if (changes.length) app.scheduleSave();
+  };
   /* A note dropped in an area, even at its edge, ends up fully inside. */
   app.fitNoteInArea = function (t) {
     const w = widthOf(t.id), h = heightOf(t.id);

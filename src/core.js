@@ -656,13 +656,13 @@
       a.title.localeCompare(b.title));
   }
   /* Lays notes out in reading order, in rows, with each priority starting its own row. */
-  function tidyLayout(tasks, heightOf, area, noteW, gap = 24, widthOf) {
+  function tidyLayout(tasks, heightOf, area, noteW, gap = 24, widthOf, priorityRows = true) {
     const out = {};
     let x = area.x, y = area.y, rowHeight = 0, priority = null;
     for (const t of tidyOrder(tasks)) {
       const w = widthOf ? widthOf(t.id) : noteW, h = heightOf(t.id);
       const wraps = x > area.x && x + w > area.x + area.w;
-      if (wraps || (priority !== null && t.priority !== priority)) {
+      if (wraps || (priorityRows && priority !== null && t.priority !== priority)) {
         y += rowHeight + gap;
         x = area.x;
         rowHeight = 0;
@@ -712,20 +712,49 @@
       h: Math.max(area.h, rect.y + rect.h + AREA_PAD - area.y),
     };
   }
-  /* Tidies notes inside their areas and the rest underneath. Areas keep their place, unless one has grown into another. */
+  /* The size each area needs to hug the notes inside it, growing or shrinking. Areas with no notes keep their size.
+     Returns only the areas whose size changes, as { id, w, h }. */
+  function fitAreasToNotes(areas, rects) {
+    const assign = {};
+    for (const r of rects) {
+      const a = areaAt(areas, r.x + r.w / 2, r.y + r.h / 2);
+      if (a) (assign[a.id] = assign[a.id] || []).push(r);
+    }
+    const out = [];
+    for (const a of areas) {
+      const members = assign[a.id];
+      if (!members) continue;
+      const w = Math.max(AREA_MIN_W, Math.round(Math.max(...members.map(r => r.x + r.w)) + AREA_PAD - a.x));
+      const h = Math.max(AREA_MIN_H, Math.round(Math.max(...members.map(r => r.y + r.h)) + AREA_PAD - a.y));
+      if (w !== a.w || h !== a.h) out.push({ id: a.id, w, h });
+    }
+    return out;
+  }
+  /* How wide an area should be for this many notes: up to three across. */
+  function areaWidthFor(widths, gap = 24) {
+    if (!widths.length) return null;
+    const across = Math.min(3, widths.length), widest = Math.max(...widths);
+    return Math.max(AREA_MIN_W, across * widest + (across - 1) * gap + AREA_PAD * 2);
+  }
+  /* Tidies notes inside their areas and the rest underneath. Areas with notes are sized to fit them; empty ones keep their size. */
   function tidyBoard(tasks, areas, heightOf, widthOf, view, assign, gap = 24) {
     const positions = {}, placed = [];
     for (const a of [...areas].sort((p, q) => p.y - q.y || p.x - q.x)) {
       const members = tasks.filter(t => assign[t.id] === a.id);
-      const next = { ...a, w: Math.max(a.w, members.reduce((m, t) => Math.max(m, widthOf(t.id)), 0) + AREA_PAD * 2) };
+      // Fit the notes, but don't grow sideways into an area beside this one: wrap onto more rows instead.
+      const widths = members.map(t => widthOf(t.id));
+      const room = Math.min(Infinity, ...areas.filter(b => b !== a && b.x > a.x && b.y < a.y + a.h && b.y + b.h > a.y).map(b => b.x - gap - a.x));
+      const next = { ...a, w: widths.length ? Math.max(Math.max(...widths) + AREA_PAD * 2, Math.min(areaWidthFor(widths, gap), Math.max(a.w, room))) : a.w };
       for (const p of placed) {
         if (next.x < p.x + p.w && next.x + next.w > p.x && next.y < p.y + p.h + gap) next.y = p.y + p.h + gap;
       }
       const top = next.y + AREA_HEAD;
-      const inside = tidyLayout(members, heightOf, { x: next.x + AREA_PAD, y: top, w: next.w - AREA_PAD * 2 }, NOTE_W, gap, widthOf);
+      // Inside an area, notes simply fill rows in tidy order, so the area stays compact.
+      const inside = tidyLayout(members, heightOf, { x: next.x + AREA_PAD, y: top, w: next.w - AREA_PAD * 2 }, NOTE_W, gap, widthOf, false);
+      if (members.length) next.w = Math.max(AREA_MIN_W, Math.round(Math.max(...members.map(t => inside[t.id].x + widthOf(t.id))) + AREA_PAD - next.x));
       Object.assign(positions, inside);
       const bottom = members.reduce((m, t) => Math.max(m, inside[t.id].y + heightOf(t.id)), top);
-      next.h = Math.max(next.h, bottom + AREA_PAD - next.y);
+      next.h = members.length ? Math.max(AREA_MIN_H, bottom + AREA_PAD - next.y) : next.h;
       placed.push(next);
     }
     const loose = tasks.filter(t => !placed.some(a => a.id === assign[t.id]));
@@ -744,8 +773,7 @@
       const members = tasks.filter(t => (t.clientTag || '').trim().toLowerCase() === tag.toLowerCase());
       let area = areaForClient(out, tag);
       if (!area) {
-        const across = Math.min(3, Math.max(2, members.length));
-        const w = across * NOTE_W + (across - 1) * gap + AREA_PAD * 2;
+        const w = areaWidthFor(members.map(t => noteWidth(t)), gap);
         if (x > left && x + w > left + limit) { x = left; y += AREA_MIN_H + gap; }
         area = newArea({ ownerId: opts.ownerId, name: tag, x, y, w, h: AREA_MIN_H });
         out.push(area);
@@ -944,7 +972,7 @@
     parseTimeEdit, setTrackedTime, findClient, addClient, clientStats, renameClient, removeClient,
     THEMES, quickValues, taskFromQuick, formatHours, hoursLabel, findTime,
     timerLooksForgotten, timerStopGuess, stopTimerAt, localDateTimeValue,
-    AREA_PAD, AREA_HEAD, AREA_MIN_W, AREA_MIN_H, newArea, areaAt, assignAreas, areaForClient, grownArea, tidyBoard, clientAreas,
+    AREA_PAD, AREA_HEAD, AREA_MIN_W, AREA_MIN_H, newArea, areaAt, assignAreas, areaForClient, grownArea, fitAreasToNotes, areaWidthFor, tidyBoard, clientAreas,
     VIEWS, listGroups, columnGroups, moveInOrder,
     NOTE_W, NOTE_MIN_W, NOTE_MAX_W, NOTE_MAX_H, noteWidth, noteTextScale, subtaskLimit,
     uid, esc, todayISO, localDate, addDays, daysBetween, weekStart, weekDays, monthGrid, fmtDay, dueLabel, isISODate,

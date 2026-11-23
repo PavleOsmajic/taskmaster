@@ -142,6 +142,7 @@
     world.innerHTML = app.areasHTML() + list.map(noteHTML).join('');
     world.querySelectorAll('.n').forEach(el => el.classList.toggle('dim', !matchesFilters(app.task(el.dataset.note))));
     placeNewNotes(list);
+    if (app.fitAreas) app.fitAreas();
     if (focusId) { const f = world.querySelector(`[data-note="${CSS.escape(focusId)}"]`); if (f) f.focus({ preventScroll: true }); }
     if (!list.length) world.insertAdjacentHTML('beforeend', '');
     const empty = $('#boardEmpty');
@@ -415,6 +416,7 @@
         o.el.style.zIndex = o.t.z;
         app.fitNoteInArea(o.t);
       }
+      app.fitAreas();
       app.scheduleSave();
     };
     addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
