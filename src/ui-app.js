@@ -75,6 +75,9 @@
           ['Load the saved version', () => location.reload()],
           ['Save mine over it', () => { blocked = false; flush({ force: true }); }],
         ]);
+      } else if (await lostAccess()) {
+        setSaveState('bad', 'Not saved');
+        showAccessBanner();
       } else {
         setSaveState('bad', 'Not saved');
         showBanner('save', `Your changes could not be saved (${esc(e.message || 'unknown problem')}). They are still on this screen, but will be lost if you close it.`, [
@@ -87,6 +90,37 @@
     }
   }
   app.flush = flush;
+
+  /* ---------- lost folder access ---------- */
+  /* Chrome sometimes takes back access to the data folder, for example after a long break.
+     Instead of a failed save and a page refresh, offer one button that asks Chrome again. */
+  async function lostAccess() {
+    if (!app.store || !app.store.hasAccess) return false;
+    try { return !(await app.store.hasAccess()); } catch (e) { return false; }
+  }
+  function showAccessBanner(note) {
+    showBanner('save', `${note ? `${esc(note)} ` : ''}Chrome has paused Taskmaster's access to your data folder <b>${esc(app.store.label || '')}</b>. ${dirty ? 'Your latest changes are still on this screen. ' : ''}Reconnect to keep saving.`, [
+      ['Reconnect', reconnect],
+      ['Download a copy', () => app.exportData()],
+    ]);
+  }
+  async function reconnect() {
+    // Asks straight away, while the click still counts, which Chrome requires.
+    let ok = false;
+    try { ok = await app.store.regainAccess(); } catch (e) { ok = false; }
+    if (!ok) { showAccessBanner('Access wasn\'t given.'); return; }
+    hideBanner('save');
+    if (dirty) flush(); else setSaveState('ok', 'Saved');
+    app.toast('Reconnected to your data folder', { ms: 2500 });
+  }
+  /* Check when you come back to the window, so you can reconnect before making changes. */
+  async function checkAccess() {
+    if (document.visibilityState !== 'visible' || !(await lostAccess())) return;
+    if (!dirty) setSaveState('bad', 'Paused');
+    showAccessBanner();
+  }
+  document.addEventListener('visibilitychange', checkAccess);
+  window.addEventListener('focus', checkAccess);
   app.isDirty = () => dirty;
   app.setStore = store => { app.store = store; };
 

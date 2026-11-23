@@ -48,6 +48,7 @@ Font: Poppins (included). Greens: `#33C88A`, `#3BE29E`, `#1A8F61`. Mint: `#E2F5E
 ## Things not yet confirmed in real use
 
 - The folder picker when choosing where to save.
+- The Reconnect banner when Chrome pauses folder access mid-session. It was tested with a simulated folder, not a real permission loss.
 - Pasting copied hours into Basecamp. The app reports a successful copy, but the clipboard contents weren't read back.
 - Shift-drag box select with a real keyboard and mouse. It was only tested with simulated input.
 - Clicking an empty Client box to open its list straight away.

@@ -13,6 +13,8 @@ A personal sticky-note task board in the OMD style. Everything runs from one fil
 
 Each computer keeps its own person's list. When reopening a data folder, your browser may ask you to reconnect it. That's a normal browser safety step.
 
+Chrome can also pause access to the folder while Taskmaster is open, for example after a long break. A banner then appears with a **Reconnect** button. Click it and allow access, and saving carries on with no refresh. Changes you made meanwhile stay on screen and are saved once you reconnect.
+
 ## Adding a task
 
 Press `N`. Only the name is needed, so you can type it and press Enter. Everything else in the box is optional: template, client, service, priority, due and start dates, status, repeats, who it's with, colour, Today, subtasks, notes, time already spent, and starting the timer straight away.

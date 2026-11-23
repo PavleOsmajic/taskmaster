@@ -44,6 +44,9 @@
     return {
       mode: 'folder',
       label: dir.name,
+      /* Chrome can take folder access back while Taskmaster is open. These check for that and ask again. */
+      async hasAccess() { return (await dir.queryPermission({ mode: 'readwrite' })) === 'granted'; },
+      async regainAccess() { return (await dir.requestPermission({ mode: 'readwrite' })) === 'granted'; },
       async load() {
         const text = await readOptional(dir, DATA_FILE);
         lastSeen = await stamp();
